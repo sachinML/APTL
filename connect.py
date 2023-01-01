@@ -8,10 +8,6 @@ from urllib3.exceptions import MaxRetryError
 from requests.auth import HTTPBasicAuth
 
 class Get_Response:
-    
-#     def __init__(self, response, auth):
-#         self.response = response
-#         self.auth = auth
         
     def data(self, response):
         if response.status == 200:
