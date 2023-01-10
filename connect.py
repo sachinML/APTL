@@ -37,7 +37,7 @@ class Get_Response:
 #     def auth_handler(self, userid=input(), password=input()):
         
 #         authorized_response = requests.get(path, auth=HTTPBasicAuth(userid, password))
-#         return json.loads(authorized_response.data.
+#         return json.loads(authorized_response.data
 
         
 def download_data(**kwargs):
