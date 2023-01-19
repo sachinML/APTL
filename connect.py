@@ -8,10 +8,13 @@ class APIConnector:
         self.session = requests.Session()
         self.retry_count = retry_count
         self.retry_interval = retry_interval
-        
-   
-        
-        
+    
+     def _make_request(self, endpoint, method='get', **kwargs):
+        headers = kwargs.get('headers', {})
+        if self.api_key:
+            headers['Authorization'] = f'Bearer {self.api_key}'
+        kwargs['headers'] = headers
+ 
         
 
 class Get_Response:
