@@ -1,11 +1,18 @@
-import json
 import requests
 import logging
-import validators
-import urllib3
-from urllib3.util import Retry
-from urllib3.exceptions import MaxRetryError
-from requests.auth import HTTPBasicAuth
+from time import sleep
+
+class APIConnector:
+    def __init__(self, api_key=None, retry_count=3, retry_interval=3):
+        self.api_key = api_key
+        self.session = requests.Session()
+        self.retry_count = retry_count
+        self.retry_interval = retry_interval
+        
+   
+        
+        
+        
 
 class Get_Response:
         
