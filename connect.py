@@ -58,12 +58,7 @@ class Get_Response:
         else:
             logging.error(f"Got an unexpected status code from the API (`{response.status}`).")
             
-            
-#     def auth_handler(self, userid=input(), password=input()):
-        
-#         authorized_response = requests.get(path, auth=HTTPBasicAuth(userid, password))
-#         return json.loads(authorized_response
-
+      
         
 def download_data(**kwargs):
     
