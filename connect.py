@@ -12,8 +12,23 @@ class APIConnector:
      def _make_request(self, endpoint, method='get', **kwargs):
         headers = kwargs.get('headers', {})
         if self.api_key:
-            headers['Authorization'] = f'Bearer {self.api_key}'
-        kwargs['headers'] = headers
+                    headers['Authorization'] = f'Bearer {self.api_key}'
+                kwargs['headers'] = headers
+                for i in range(self.retry_count):
+                    try:
+                        if method == 'get':
+                            response = self.session.get(endpoint, **kwargs)
+                        elif method == 'post':
+                            response = self.session.post(endpoint, **kwargs)
+                        elif method == 'put':
+                            response = self.session.put(endpoint, **kwargs)
+                        elif method == 'delete':
+                            response = self.session.delete(endpoint, **kwargs)
+                        else:
+                            raise ValueError(f'Invalid method: {method}')
+                        response.raise_for_status()
+                        return response.json()
+        
  
         
 
