@@ -28,77 +28,49 @@ class APIConnector:
                             raise ValueError(f'Invalid method: {method}')
                         response.raise_for_status()
                         return response.json()
-        
+                    
+                    except requests.exceptions.HTTPError as http_err:
+                        if response.status_code == 401:
+                            logging.error(f'Error: {response.status_code} - Unauthorized')
+                        elif response.status_code == 403:
+                            logging.error(f'Error: {response.status_code} - Forbidden')
+                        elif response.status_code == 404:
+                            logging.error(f'Error: {response.status_code} - Not Found')
+                        elif response.status_code == 429:
+                            logging.error(f'Error: {response.status_code} - Too Many Requests')
+                        elif response.status_code >= 500:
+                            logging.error(f'Error: {response.status_code} - Server Error')
+                        else:
+                            logging.error(f'Error: {response.status_code} - Other Error')
+
+                        if response.status_code in [401, 403, 404]:
+                            raise Exception(f'Error: {response.status_code}')
+                        elif response.status_code == 429:
+                            logging.warning(f'Retrying in {self.retry_interval} seconds')
+                            sleep(self.retry_interval)
+                        elif response.status_code >= 500:
+                            logging.warning(f'Retrying in {self.retry_interval} seconds')
+                            sleep(self.retry_interval)
+                    except Exception as err:
+                            logging.error(f'Other error occurred: {err}')
+                            break
+                            
+    def get_data(self, endpoint, page_num=1, page_size=10):
+        params = {'page': page_num, 'page_size': page_size}
+        return self._make_request(endpoint, params=params)
+    
+    def post_data(self, endpoint, data):
+        return self._make_request(endpoint, method='post', json=data)
+
+    def put_data(self, endpoint, data):
+        return self._make_request(endpoint, method='put', json=data)
+
+    def delete_data(self, endpoint):
+        return self._make_request(endpoint, method='delete')
+
+    def authenticate(self, username, password):
+        auth_endpoint = "https://example.com/authenticate"
+        auth_data = {'username': username, 'password': password}
+        response = self._make_request(auth_endpoint, method='post', json=auth_data)
+        self.api_key = response['access_token']    
  
-        
-
-class Get_Response:
-        
-    def data(self, response):
-        if response.status == 200:
-            logging.info('That was lucky')
-            return json.loads(response.data)
-    
-    def error_handler(self, auth):
-        if auth == 400:
-            logger.error("According to the API, your request is Malformed.")
-            
-        elif auth == 401:
-            logging.error("Unauthorized error, give the proper credentials.")
-            
-        elif auth == 403:
-            logging.error("The client attempts a resource interaction that is outside of its permitted scope, contact with the developers!")
-            
-        elif auth == 404:
-            logging.error("Client Error: Bad Request for url") 
-            
-        elif 500 <= auth < 600:
-            logging.error("Sorry, There seems to be an internal issue with the API.")
-            
-        else:
-            logging.error(f"Got an unexpected status code from the API (`{response.status}`).")
-            
-      
-        
-def download_data(**kwargs):
-    
-    if not validators.url(kwargs["path"]):
-        print("Url is Invalid")   # will check the url format
-        
-    else:
-        http = urllib3.PoolManager(num_pools=3)
-        ranges = tuple(x for x in requests.status_codes._codes if x != 401)
-        retry = Retry(3, raise_on_status=True, status_forcelist=ranges)
-
-        try:
-            r = http.request('GET', kwargs["path"], retries=retry)
-            
-            Response = Get_Response()
-            return Response.data(r)
-        
-        except MaxRetryError as m_err:
-            x = int(str([m_err.reason]).split(" ")[2])
-            Error = Get_Response()
-            print(x)
-            
-            return Error.error_handler(x)
-        
-        
-#         data=get_data(r, path)
-#         print("Give the File name: "
-        
-#         file_name = input()
-#         file_location = "D:\\ApiC\\API_VT" + "\\" + file_name + ".json"
-#         with open(file_location, "w+") as file:
-#             json.dump(data, file)
-
-
-print("url entered is: ")
-# x = input()
-# download_data(x)
-
-x = input()
-y = input()
-z = input()
-download_data(path=x, userid=y, password=z)
-            
