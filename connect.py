@@ -73,3 +73,4 @@ class APIConnector:
         auth_data = {'username': username, 'password': password}
         response = self._make_request(auth_endpoint, method='post', json=auth_data)
         self.api_key = response['access_token']    
+        
